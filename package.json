@@ -1,0 +1,70 @@
+{
+  "name": "four-eyes-projection",
+  "version": "0.1.0",
+  "description": "Project for Four Eyes",
+  "author": "Scott Thiessen (http://varyd.io)",
+  "license": "ISC",
+  "homepage": "https://github.com/sccottt/four-eyes-projection#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sccottt/four-eyes-projection.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sccottt/four-eyes-projection/issues"
+  },
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "main": "main.js",
+  "scripts": {
+    "build": "node ./scripts/build.js",
+    "build:web": "node ./scripts/build.js -b",
+    "enable-scripts": "chmod +x ./scripts/*",
+    "package": "node ./scripts/package.js",
+    "package:win": "node ./scripts/package.js -w",
+    "reinstall": "rm -rf node_modules; npm i",
+    "start": "node ./scripts/start.js",
+    "watch": "node ./scripts/build.js -w",
+    "watch:web": "node ./scripts/build.js -wb"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "0.28.4",
+    "electron": "^1.7.12",
+    "electron-packager": "^10.1.0",
+    "file-loader": "^1.1.6",
+    "html-webpack-plugin": "2.28.0",
+    "node-sass": "4.5.3",
+    "sass-loader": "6.0.5",
+    "source-map-loader": "0.2.1",
+    "style-loader": "0.18.2",
+    "webpack": "2.6.1",
+    "webpack-dev-server": "^2.9.3",
+    "webpack-merge": "^4.1.1"
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "electron-reload": "^1.2.2",
+    "fs-extra": "^5.0.0",
+    "lodash": "4.17.4",
+    "log-box": "^0.4.1",
+    "minimist": "^1.2.0",
+    "varyd-utils": "^0.6.5"
+  },
+  "log-box": {
+    "default": {
+      "style": "round",
+      "color": "#9f0",
+      "textColor": "#9f0",
+      "bold": true,
+      "margin": {
+        "top": 1,
+        "bottom": 2
+      }
+    }
+  }
+}
