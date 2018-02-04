@@ -1,2 +1,2 @@
-# four-eyes-projection
-Project for Four Eyes
+# Four Eyes projection
+Projection for Four Eyes
