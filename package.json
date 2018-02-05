@@ -53,7 +53,7 @@
     "lodash": "4.17.4",
     "log-box": "^0.4.1",
     "minimist": "^1.2.0",
-    "two.js": "^0.7.0-alpha.1",
+    "pixi.js": "^4.7.0",
     "varyd-utils": "^0.6.5"
   },
   "log-box": {
