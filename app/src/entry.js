@@ -17,6 +17,16 @@ import testSeq7 from './images/test-seq-7.png';
 
 // Constants
 
+const testSeqs = [
+  testSeq1,
+  testSeq2,
+  testSeq3,
+  testSeq4,
+  testSeq5,
+  testSeq6,
+  testSeq7
+];
+
 
 // Vars
 
@@ -25,9 +35,9 @@ var elApp = document.getElementById('app'),
     appH  = elApp.clientHeight;
 
 var app   = new PIXI.Application(appW, appH),
-    eye   = PIXI.Sprite.fromImage(svgEye);
+    anim;
 
-var timeLastEyeMove = Date.now();
+var timeLastMove = Date.now();
 
 
 // Init
@@ -38,29 +48,20 @@ function init() {
 
   elApp.appendChild(app.view);
 
-  app.ticker.add(onFrame);
-
-  spriteTest();
+  initAnim();
+  start();
 
 }
 
-function spriteTest() {
+function initAnim() {
 
-  let seq = [
-    testSeq1,
-    testSeq2,
-    testSeq3,
-    testSeq4,
-    testSeq5,
-    testSeq6,
-    testSeq7
-  ].map((seqImg) => PIXI.Texture.fromImage(seqImg));
+  anim = new PIXI.extras.AnimatedSprite(testSeqs.map((seqImg) => PIXI.Texture.fromImage(seqImg)));
 
-  let sprite = new PIXI.extras.AnimatedSprite(seq);
-      sprite.animationSpeed = 0.2;
-      sprite.play();
+  anim.animationSpeed = 0.2;
+  anim.loop           = false;
+  anim.anchor.set(0.5);
 
-  app.stage.addChild(sprite);
+  app.stage.addChild(anim);
 
 }
 
@@ -68,9 +69,11 @@ function spriteTest() {
 
 function onFrame(delta) {
 
-  if (Date.now() - timeLastEyeMove > 3000) {
-    moveEye();
-    timeLastEyeMove = Date.now();
+  const moveSecs = 3;
+
+  if (Date.now() - timeLastMove > (moveSecs * 1000)) {
+    moveAnim();
+    timeLastMove = Date.now();
   }
 
 }
@@ -78,9 +81,17 @@ function onFrame(delta) {
 
 // Functions
 
-function moveEye() {
-  eye.anchor.set(0.5);
-  eye.x = Math.random() * app.screen.width;
-  eye.y = Math.random() * app.screen.height;
-  app.stage.addChild(eye);
+function start() {
+
+  moveAnim();
+  app.ticker.add(onFrame);
+
+}
+
+function moveAnim() {
+
+  anim.x = Math.random() * appW;
+  anim.y = Math.random() * appH;
+  anim.gotoAndPlay(0);
+
 }
