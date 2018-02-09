@@ -59,21 +59,33 @@ export default class Creature extends PIXI.Container {
 
   onFrame() {
 
-    const xMin = -RADIUS_MAX,
-          xMax = App.W + RADIUS_MAX;
+    if (this.velX !== 0) {
 
-    this.x += this.velX;
+      const xMin = -RADIUS_MAX,
+            xMax = App.W + RADIUS_MAX;
 
-    if ((this.velX > 0) && (this.x > xMax)) {
-      this.x = xMin;
-      this.y = this.getRandomY();
+      this.x += this.velX;
+
+      if ((this.velX > 0) && (this.x > xMax)) {
+        this.x = xMin;
+        this.y = this.getRandomY();
+      }
+
+      if ((this.velX < 0) && (this.x < xMin)) {
+        this.x = xMax;
+        this.y = this.getRandomY();
+
+      }
+
     }
 
-    if ((this.velX < 0) && (this.x < xMin)) {
-      this.x = xMax;
-      this.y = this.getRandomY();
-
+    if (App.followMouse) {
+      this.lookAt(App.lookAtPt);
+    } else {
+      this.lookForward();
     }
+
+    this.eyes.forEach((eye) => eye.update());
 
     requestAnimationFrame(this.onFrame);
 
@@ -152,6 +164,18 @@ export default class Creature extends PIXI.Container {
       eye.open();
     }
 
+  }
+
+  lookAt(pt) {
+    this.eyes.forEach((eye) => {
+      eye.lookToward(pt);
+    })
+  }
+
+  lookForward(pt) {
+    this.eyes.forEach((eye) => {
+      eye.lookForward();
+    })
   }
 
 

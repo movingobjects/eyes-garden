@@ -4,7 +4,7 @@
 import './styles/style.scss';
 
 import * as PIXI from 'pixi.js';
-import { random } from 'varyd-utils';
+import { maths, random, geom } from 'varyd-utils';
 
 import App from './App';
 
@@ -50,6 +50,8 @@ import imgShut19 from './images/eye-shut/eye-shut-19.png';
 
 // Constants
 
+const IRIS_EASE = 0.2;
+
 const imgSeqEyeOpen = [
   imgOpen1, imgOpen2, imgOpen3, imgOpen4, imgOpen5,
   imgOpen6, imgOpen7, imgOpen8, imgOpen9, imgOpen10,
@@ -83,7 +85,11 @@ export default class Eye extends PIXI.Container {
 
   initState() {
 
-    this.isOpen = false;
+    this.imgScale  = 0.2;
+    this.isOpen    = false;
+
+    this.irisTrgtX = 0;
+    this.irisTrgtY = 0;
 
   }
 
@@ -101,19 +107,18 @@ export default class Eye extends PIXI.Container {
 
   makeEye() {
 
-    const scale = 0.2;
-
     let sclera                  = PIXI.Sprite.fromImage(imgSclera);
         sclera.anchor.set(0.5);
-        sclera.scale            = new PIXI.Point(0.2, 0.2);
+        sclera.scale            = new PIXI.Point(this.imgScale, this.imgScale);
     this.sclera = sclera;
     this.addChild(this.sclera);
 
     let iris                    = new PIXI.Graphics();
         iris.beginFill(0x000000);
-        iris.drawCircle(0, 0, 75 * scale);
+        iris.drawCircle(0, 0, 80 * this.imgScale);
         iris.beginFill(0xffffff);
-        iris.drawCircle(0, 0, 35 * scale);
+        iris.drawCircle(0, 0, 35 * this.imgScale);
+        iris.endFill();
     this.iris = iris;
     this.addChild(this.iris);
 
@@ -122,7 +127,7 @@ export default class Eye extends PIXI.Container {
         openAnim.animationSpeed = random.num(0.25, 0.75);
         openAnim.tint           = 0x111111;
         openAnim.anchor.set(0.5);
-        openAnim.scale          = new PIXI.Point(scale, scale);
+        openAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
         openAnim.gotoAndStop(0);
     this.openAnim = openAnim;
     this.addChild(this.openAnim);
@@ -132,7 +137,7 @@ export default class Eye extends PIXI.Container {
         shutAnim.animationSpeed = random.num(0.25, 0.75);
         shutAnim.tint           = 0x111111;
         shutAnim.anchor.set(0.5);
-        shutAnim.scale          = new PIXI.Point(scale, scale);
+        shutAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
         shutAnim.gotoAndStop(0);
     this.shutAnim = shutAnim;
     this.addChild(this.shutAnim);
@@ -149,6 +154,41 @@ export default class Eye extends PIXI.Container {
     this.isOpen = false;
     this.openAnim.gotoAndStop(this.lastOpenFrame);
     this.shutAnim.gotoAndPlay(0);
+  }
+
+  look(anglePerc, amt) {
+
+    let circRad = maths.lerp(5, 75, amt, true) * this.imgScale,
+        irisPt = geom.ptAroundCircle(circRad, anglePerc);
+
+    this.irisTrgtX = irisPt.x;
+    this.irisTrgtY = irisPt.y;
+
+  }
+
+  lookToward(pt) {
+
+    let gPt       = this.toGlobal(new PIXI.Point(0, 0)),
+        rads      = Math.atan2(pt.y - gPt.y, pt.x - gPt.x) + (Math.PI * 0.5),
+        anglePerc = rads / (Math.PI * 2);
+
+    let distSq    = geom.distSq(pt, gPt),
+        amt       = maths.norm(distSq, (10 * 10), (200 * 200), true);
+
+    this.look(anglePerc, amt);
+
+  }
+
+  lookForward() {
+    this.irisTrgtX = 0;
+    this.irisTrgtY = 0;
+  }
+
+  update() {
+
+    this.iris.x = maths.lerp(this.iris.x, this.irisTrgtX, IRIS_EASE);
+    this.iris.y = maths.lerp(this.iris.y, this.irisTrgtY, IRIS_EASE);
+
   }
 
 }

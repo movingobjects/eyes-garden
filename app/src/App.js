@@ -50,6 +50,19 @@ export default class App {
 
     App.elem.appendChild(App.pixiApp.view);
 
+    let bg = new PIXI.Graphics();
+        bg.beginFill(0x000000)
+        bg.drawRect(0, 0, App.W, App.H);
+    App.stage.addChild(bg);
+
+    App.stage.interactive = true;
+    App.stage.on('click', (e) => {
+      App.followMouse = App.followMouse ? false : true;
+    });
+    App.stage.on('mousemove', (e) => {
+      App.lookAtPt = new PIXI.Point(e.data.global.x, e.data.global.y);
+    });
+
   }
 
   makeCreatures() {
