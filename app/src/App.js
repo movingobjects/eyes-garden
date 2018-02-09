@@ -9,7 +9,7 @@ import Creature from './Creature';
 
 // Constants
 
-const CREATURE_COUNT   = 5;
+const CREATURE_COUNT   = 7;
 
 
 export default class App {
@@ -53,8 +53,6 @@ export default class App {
     for (let i = 0; i < CREATURE_COUNT; i++) {
 
       let creature   = new Creature();
-          creature.x = Math.random() * App.W;
-          creature.y = Math.random() * App.H;
 
       App.stage.addChild(creature);
 

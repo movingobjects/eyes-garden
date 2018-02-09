@@ -66,14 +66,13 @@ export default class Eye extends PIXI.Container {
 
   // Constructor
 
-  constructor(color) {
+  constructor() {
 
     super();
 
     this.isOpen = false;
 
     this.openAnim                = new PIXI.extras.AnimatedSprite(eyeOpenSeq.map((img) => PIXI.Texture.fromImage(img)));
-    this.openAnim.tint           = color;
     this.openAnim.loop           = false;
     this.openAnim.animationSpeed = random.num(0.25, 0.75);
     this.openAnim.anchor.set(0.5);
@@ -81,7 +80,6 @@ export default class Eye extends PIXI.Container {
     this.addChild(this.openAnim);
 
     this.shutAnim                = new PIXI.extras.AnimatedSprite(eyeShutSeq.map((img) => PIXI.Texture.fromImage(img)));
-    this.shutAnim.tint           = color;
     this.shutAnim.loop           = false;
     this.shutAnim.animationSpeed = random.num(0.25, 0.75);
     this.shutAnim.anchor.set(0.5);
