@@ -5,6 +5,7 @@ import './styles/style.scss';
 
 import * as PIXI from 'pixi.js';
 import { random, maths, geom } from 'varyd-utils';
+import { Range } from 'varyd-utils';
 
 import App from './App';
 import Eye from './Eye';
@@ -12,13 +13,15 @@ import Eye from './Eye';
 
 // Constants
 
-const RADIUS_MIN    = 500,
-      RADIUS_MAX    = 1500,
-      EYE_COUNT_MIN = 2,
-      EYE_COUNT_MAX = 10,
-      SCALE_MIN     = 0.15,
-      SCALE_MAX     = 0.35,
-      BODY_BG_COLOR = 0x000000;
+const RADIUS_RANGE         = new Range(500, 1500),
+      EYE_COUNT_RANGE      = new Range(2, 10),
+      SCALE_RANGE          = new Range(0.15, 0.35),
+      OPEN_SHUT_SECS_RANGE = new Range(1, 5),
+      BLINK_SECS_RANGE     = new Range(0.25, 20),
+      DART_EYES_RANGE      = new Range(0.25, 5),
+      VEL_RANGE            = new Range(-5, 5);
+
+const BODY_BG_COLOR        = 0x000000;
 
 
 // Class
@@ -43,16 +46,18 @@ export default class Creature extends PIXI.Container {
   }
   initState() {
 
-    this.eyeScale = random.num(SCALE_MIN, SCALE_MAX);
-    this.radius   = random.int(RADIUS_MIN, RADIUS_MAX) * this.eyeScale;
-    this.velX     = 0;//random.num(-4, 4);
 
-    this.eyeCount = Math.round(maths.map(this.radius, RADIUS_MIN * this.eyeScale, RADIUS_MAX * this.eyeScale, EYE_COUNT_MIN, EYE_COUNT_MAX, true))
+    this.eyeScale = random.num(SCALE_RANGE.min, SCALE_RANGE.max);
+    this.radius   = random.int(RADIUS_RANGE.min, RADIUS_RANGE.max) * this.eyeScale;
+    this.velX     = random.num(-3, 3);
 
+    this.eyeCount = Math.round(maths.map(this.radius, RADIUS_RANGE.min * this.eyeScale, RADIUS_RANGE.max * this.eyeScale, EYE_COUNT_RANGE.min, EYE_COUNT_RANGE.max, true))
     this.eyes     = [];
 
     this.x        = this.getRandomX();
     this.y        = this.getRandomY();
+
+    this.gazePt   = undefined;
 
   }
 
@@ -63,8 +68,8 @@ export default class Creature extends PIXI.Container {
 
     if (this.velX !== 0) {
 
-      const xMin = -RADIUS_MAX,
-            xMax = App.W + RADIUS_MAX;
+      const xMin = -RADIUS_RANGE.max,
+            xMax = App.W + RADIUS_RANGE.max;
 
       this.x += this.velX;
 
@@ -81,10 +86,10 @@ export default class Creature extends PIXI.Container {
 
     }
 
-    if (App.followMouse) {
-      this.lookAt(App.lookAtPt);
-    } else {
-      this.lookForward();
+    if (this.gazePt) {
+      this.eyes.forEach((eye) => {
+        eye.lookToward(this.gazePt);
+      })
     }
 
     this.eyes.forEach((eye) => eye.update());
@@ -102,6 +107,7 @@ export default class Creature extends PIXI.Container {
 
     this.queueEyeUpdate();
     this.queueBlink();
+    this.queueDartEyes();
 
   }
 
@@ -149,12 +155,10 @@ export default class Creature extends PIXI.Container {
 
   queueEyeUpdate() {
 
-    const delay = 1000 * random.num(2, 4);
-
     setTimeout(() => {
       this.updateAnEye();
       this.queueEyeUpdate();
-    }, delay);
+    }, OPEN_SHUT_SECS_RANGE.random * 1000);
 
   }
   updateAnEye() {
@@ -173,12 +177,10 @@ export default class Creature extends PIXI.Container {
 
   queueBlink() {
 
-    const delay = 1000 * random.num(0.25, 20);
-
     setTimeout(() => {
       this.blink();
       this.queueBlink();
-    }, delay);
+    }, BLINK_SECS_RANGE.random * 1000);
 
   }
   blink() {
@@ -187,17 +189,40 @@ export default class Creature extends PIXI.Container {
 
   }
 
-  lookAt(pt) {
-    this.eyes.forEach((eye) => {
-      eye.lookToward(pt);
-    })
+  queueDartEyes() {
+
+    setTimeout(() => {
+      this.dartEyes();
+      this.queueDartEyes();
+    }, DART_EYES_RANGE.random * 1000);
+
   }
-  lookForward(pt) {
-    this.eyes.forEach((eye) => {
-      eye.lookForward();
-    })
+  dartEyes() {
+
+    if (random.boolean()) {
+      this.lookForward();
+    } else {
+      this.lookAt(new PIXI.Point(this.getRandomX(), this.getRandomY()));
+    }
+
   }
 
+  lookAt(pt) {
+    this.gazePt = pt;
+    this.blink();
+  }
+  lookForward(pt) {
+
+    const anglePerc = (this.velX < 1) ? 0.75 : 0.25,
+          amt       = maths.map(Math.abs(this.velX), 0, VEL_RANGE.max, 0.1, 1);
+
+    this.eyes.forEach((eye) => {
+      eye.look(anglePerc, amt);
+    });
+
+    this.gazePt = undefined;
+
+  }
 
 
   // Helpers
