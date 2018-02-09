@@ -136,8 +136,6 @@ export default class Creature extends PIXI.Container {
           eye.x = pt.x;
           eye.y = pt.y;
 
-      //eye.open();
-
       this.body.drawCircle(pt.x, pt.y, 300 * this.eyeScale);
 
       this.addChild(eye);

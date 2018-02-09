@@ -167,7 +167,7 @@ export default class Eye extends PIXI.Container {
         blinkAnim.tint           = MASK_COLOR;
         blinkAnim.anchor.set(0.5);
         blinkAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
-        blinkAnim.gotoAndStop(0);
+        blinkAnim.gotoAndStop(this.lastBlinkFrame);
     this.blinkAnim = blinkAnim;
     this.addChild(this.blinkAnim);
 
@@ -177,7 +177,7 @@ export default class Eye extends PIXI.Container {
     this.isOpen = true;
     this.openAnim.gotoAndPlay(0);
     this.shutAnim.gotoAndStop(0);
-    this.blinkAnim.gotoAndStop(0);
+    this.blinkAnim.gotoAndStop(this.lastBlinkFrame);
   }
   shut() {
     this.isOpen = false;
