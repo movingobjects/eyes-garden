@@ -12,10 +12,13 @@ import Eye from './Eye';
 
 // Constants
 
-const RADIUS_MIN    = 100,
-      RADIUS_MAX    = 300,
+const RADIUS_MIN    = 500,
+      RADIUS_MAX    = 1500,
       EYE_COUNT_MIN = 2,
-      EYE_COUNT_MAX = 10;
+      EYE_COUNT_MAX = 10,
+      SCALE_MIN     = 0.15,
+      SCALE_MAX     = 0.35,
+      BODY_BG_COLOR = 0x000000;
 
 
 // Class
@@ -35,17 +38,16 @@ export default class Creature extends PIXI.Container {
     this.start();
 
   }
-
   initBindings() {
     this.onFrame = this.onFrame.bind(this);
   }
-
   initState() {
 
-    this.radius   = random.int(RADIUS_MIN, RADIUS_MAX);
-    this.velX     = random.num(-5, 5);
+    this.eyeScale = random.num(SCALE_MIN, SCALE_MAX);
+    this.radius   = random.int(RADIUS_MIN, RADIUS_MAX) * this.eyeScale;
+    this.velX     = 0;//random.num(-4, 4);
 
-    this.eyeCount = Math.round(maths.map(this.radius, RADIUS_MIN, RADIUS_MAX, EYE_COUNT_MIN, EYE_COUNT_MAX))
+    this.eyeCount = Math.round(maths.map(this.radius, RADIUS_MIN * this.eyeScale, RADIUS_MAX * this.eyeScale, EYE_COUNT_MIN, EYE_COUNT_MAX, true))
 
     this.eyes     = [];
 
@@ -99,21 +101,26 @@ export default class Creature extends PIXI.Container {
     requestAnimationFrame(this.onFrame);
 
     this.queueEyeUpdate();
+    this.queueBlink();
 
   }
 
   makeEyes() {
 
+    const minDistX  = 325 * this.eyeScale,
+          minDistY  = 175 * this.eyeScale,
+          minDistSq = Math.pow(300 * this.eyeScale, 2)
+
     const overlapsAnEye = (pt) => {
       const overlap = this.eyes.find((eye) => {
-        return ((maths.diff(eye.x, pt.x) < 65) && (maths.diff(eye.y, pt.y) < 35))
-            || (geom.distSqXY(eye.x, eye.y, pt.x, pt.y) < 60 * 60);
+        return ((maths.diff(eye.x, pt.x) < minDistX) && (maths.diff(eye.y, pt.y) < minDistY))
+            || (geom.distSqXY(eye.x, eye.y, pt.x, pt.y) < minDistSq);
       })
       return !!overlap;
     };
 
     this.body = new PIXI.Graphics();
-    this.body.beginFill(0x111111);
+    this.body.beginFill(BODY_BG_COLOR);
     this.addChild(this.body);
 
     for (let i = 0; i < this.eyeCount; i++) {
@@ -125,13 +132,13 @@ export default class Creature extends PIXI.Container {
         pt.y /= 2;
       } while (overlapsAnEye(pt))
 
-      let eye   = new Eye();
+      let eye   = new Eye(this.eyeScale);
           eye.x = pt.x;
           eye.y = pt.y;
 
       //eye.open();
 
-      this.body.drawCircle(pt.x, pt.y, 60);
+      this.body.drawCircle(pt.x, pt.y, 300 * this.eyeScale);
 
       this.addChild(eye);
       this.eyes.push(eye)
@@ -152,17 +159,33 @@ export default class Creature extends PIXI.Container {
     }, delay);
 
   }
-
   updateAnEye() {
 
     let eye = random.item(this.eyes);
 
-    if (eye.isOpen) {
-      eye.shut();
-
-    } else {
-      eye.open();
+    if (eye) {
+      if (eye.isOpen) {
+        eye.shut();
+      } else {
+        eye.open();
+      }
     }
+
+  }
+
+  queueBlink() {
+
+    const delay = 1000 * random.num(0.25, 20);
+
+    setTimeout(() => {
+      this.blink();
+      this.queueBlink();
+    }, delay);
+
+  }
+  blink() {
+
+    this.eyes.forEach((eye) => eye.blink());
 
   }
 
@@ -171,7 +194,6 @@ export default class Creature extends PIXI.Container {
       eye.lookToward(pt);
     })
   }
-
   lookForward(pt) {
     this.eyes.forEach((eye) => {
       eye.lookForward();
@@ -179,12 +201,12 @@ export default class Creature extends PIXI.Container {
   }
 
 
+
   // Helpers
 
   getRandomX() {
     return random.int(App.W);
   }
-
   getRandomY() {
     return random.int(App.H);
   }

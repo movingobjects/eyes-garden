@@ -47,10 +47,20 @@ import imgShut17 from './images/eye-shut/eye-shut-17.png';
 import imgShut18 from './images/eye-shut/eye-shut-18.png';
 import imgShut19 from './images/eye-shut/eye-shut-19.png';
 
+import imgBlink1 from './images/eye-blink/eye-blink-1.png';
+import imgBlink2 from './images/eye-blink/eye-blink-2.png';
+import imgBlink3 from './images/eye-blink/eye-blink-3.png';
+import imgBlink4 from './images/eye-blink/eye-blink-4.png';
+import imgBlink5 from './images/eye-blink/eye-blink-5.png';
+import imgBlink6 from './images/eye-blink/eye-blink-6.png';
+import imgBlink7 from './images/eye-blink/eye-blink-7.png';
+import imgBlink8 from './images/eye-blink/eye-blink-8.png';
+
 
 // Constants
 
-const IRIS_EASE = 0.2;
+const IRIS_EASE  = 0.2,
+      MASK_COLOR = 0x000000;
 
 const imgSeqEyeOpen = [
   imgOpen1, imgOpen2, imgOpen3, imgOpen4, imgOpen5,
@@ -66,6 +76,11 @@ const imgSeqEyeShut = [
   imgShut16, imgShut17, imgShut18, imgShut19
 ];
 
+const imgSeqBlink = [
+  imgBlink1, imgBlink2, imgBlink3, imgBlink4, imgBlink5,
+  imgBlink6, imgBlink7, imgBlink8
+];
+
 
 // Class
 
@@ -73,9 +88,11 @@ export default class Eye extends PIXI.Container {
 
   // Constructor
 
-  constructor() {
+  constructor(scale) {
 
     super();
+
+    this.imgScale = scale;
 
     this.initState();
 
@@ -85,7 +102,6 @@ export default class Eye extends PIXI.Container {
 
   initState() {
 
-    this.imgScale  = 0.2;
     this.isOpen    = false;
 
     this.irisTrgtX = 0;
@@ -101,6 +117,9 @@ export default class Eye extends PIXI.Container {
   get lastShutFrame() {
     return imgSeqEyeShut.length - 1;
   }
+  get lastBlinkFrame() {
+    return imgSeqBlink.length - 1;
+  }
 
 
   // Methods
@@ -115,7 +134,7 @@ export default class Eye extends PIXI.Container {
 
     let iris                    = new PIXI.Graphics();
         iris.beginFill(0x000000);
-        iris.drawCircle(0, 0, 80 * this.imgScale);
+        iris.drawCircle(0, 0, 75 * this.imgScale);
         iris.beginFill(0xffffff);
         iris.drawCircle(0, 0, 35 * this.imgScale);
         iris.endFill();
@@ -125,7 +144,7 @@ export default class Eye extends PIXI.Container {
     let openAnim                = new PIXI.extras.AnimatedSprite(imgSeqEyeOpen.map((img) => PIXI.Texture.fromImage(img)));
         openAnim.loop           = false;
         openAnim.animationSpeed = random.num(0.25, 0.75);
-        openAnim.tint           = 0x111111;
+        openAnim.tint           = MASK_COLOR;
         openAnim.anchor.set(0.5);
         openAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
         openAnim.gotoAndStop(0);
@@ -135,12 +154,22 @@ export default class Eye extends PIXI.Container {
     let shutAnim                = new PIXI.extras.AnimatedSprite(imgSeqEyeShut.map((img) => PIXI.Texture.fromImage(img)));
         shutAnim.loop           = false;
         shutAnim.animationSpeed = random.num(0.25, 0.75);
-        shutAnim.tint           = 0x111111;
+        shutAnim.tint           = MASK_COLOR;
         shutAnim.anchor.set(0.5);
         shutAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
         shutAnim.gotoAndStop(0);
     this.shutAnim = shutAnim;
     this.addChild(this.shutAnim);
+
+    let blinkAnim                = new PIXI.extras.AnimatedSprite(imgSeqBlink.map((img) => PIXI.Texture.fromImage(img)));
+        blinkAnim.loop           = false;
+        blinkAnim.animationSpeed = random.num(0.25, 0.75);
+        blinkAnim.tint           = MASK_COLOR;
+        blinkAnim.anchor.set(0.5);
+        blinkAnim.scale          = new PIXI.Point(this.imgScale, this.imgScale);
+        blinkAnim.gotoAndStop(0);
+    this.blinkAnim = blinkAnim;
+    this.addChild(this.blinkAnim);
 
   }
 
@@ -148,12 +177,13 @@ export default class Eye extends PIXI.Container {
     this.isOpen = true;
     this.openAnim.gotoAndPlay(0);
     this.shutAnim.gotoAndStop(0);
+    this.blinkAnim.gotoAndStop(0);
   }
-
   shut() {
     this.isOpen = false;
     this.openAnim.gotoAndStop(this.lastOpenFrame);
     this.shutAnim.gotoAndPlay(0);
+    this.blinkAnim.gotoAndStop(this.lastBlinkFrame);
   }
 
   look(anglePerc, amt) {
@@ -165,7 +195,6 @@ export default class Eye extends PIXI.Container {
     this.irisTrgtY = irisPt.y;
 
   }
-
   lookToward(pt) {
 
     let gPt       = this.toGlobal(new PIXI.Point(0, 0)),
@@ -178,7 +207,6 @@ export default class Eye extends PIXI.Container {
     this.look(anglePerc, amt);
 
   }
-
   lookForward() {
     this.irisTrgtX = 0;
     this.irisTrgtY = 0;
@@ -186,8 +214,23 @@ export default class Eye extends PIXI.Container {
 
   update() {
 
-    this.iris.x = maths.lerp(this.iris.x, this.irisTrgtX, IRIS_EASE);
-    this.iris.y = maths.lerp(this.iris.y, this.irisTrgtY, IRIS_EASE);
+    if (this.iris.x !== this.irisTrgtX) {
+      this.iris.x = maths.ease(this.iris.x, this.irisTrgtX, IRIS_EASE, 0.5);
+    }
+
+    if (this.iris.y !== this.irisTrgtY) {
+      this.iris.y = maths.ease(this.iris.y, this.irisTrgtY, IRIS_EASE, 0.5);
+    }
+
+  }
+
+  blink() {
+
+    if (this.isOpen) {
+      this.blinkAnim.gotoAndPlay(0);
+      this.openAnim.gotoAndStop(this.lastOpenFrame);
+      this.shutAnim.gotoAndStop(0);
+    }
 
   }
 
