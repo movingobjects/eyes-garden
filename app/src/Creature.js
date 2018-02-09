@@ -17,7 +17,7 @@ const RADIUS_RANGE         = new Range(500, 1500),
       EYE_COUNT_RANGE      = new Range(2, 10),
       SCALE_RANGE          = new Range(0.15, 0.35),
       OPEN_SHUT_SECS_RANGE = new Range(1, 5),
-      BLINK_SECS_RANGE     = new Range(0.25, 20),
+      BLINK_SECS_RANGE     = new Range(2, 20),
       DART_EYES_RANGE      = new Range(0.25, 5),
       VEL_RANGE            = new Range(-5, 5);
 
@@ -209,7 +209,9 @@ export default class Creature extends PIXI.Container {
 
   lookAt(pt) {
     this.gazePt = pt;
-    this.blink();
+    if (random.boolean()) {
+      this.blink();
+    }
   }
   lookForward(pt) {
 
