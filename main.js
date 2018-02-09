@@ -8,9 +8,10 @@ let win; // (prevents garbage collection)
 app.on('ready', () => {
 
   win = new BrowserWindow({
-    width: 1920,
-    height: 1080,
-    fullscreenable: true
+    width: 1280,
+    height: 800,
+    fullscreenable: true,
+    fullscreen: true
   });
 
   win.loadURL(`file://${__dirname}/app/build/index.html`);

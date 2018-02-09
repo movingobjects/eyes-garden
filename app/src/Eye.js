@@ -126,9 +126,11 @@ export default class Eye extends PIXI.Container {
 
   makeEye() {
 
+    let faceDirX                = random.sign();
+
     let sclera                  = PIXI.Sprite.fromImage(imgSclera);
         sclera.anchor.set(0.5);
-        sclera.scale            = new PIXI.Point(this.imgScale, this.imgScale);
+        sclera.scale            = new PIXI.Point(faceDirX * this.imgScale, this.imgScale);
     this.sclera = sclera;
     this.addChild(this.sclera);
 
