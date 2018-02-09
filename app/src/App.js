@@ -4,17 +4,17 @@
 import * as PIXI from 'pixi.js';
 import { random } from 'varyd-utils';
 
-import Eye from './Eye';
+import Creature from './Creature';
 
 
 // Constants
 
-const TOTAL_COUNT      = 25,
-      UPDATE_DELAY_MIN = 250,
-      UPDATE_DELAY_MAX = 1000;
+const CREATURE_COUNT   = 7;
 
 
 export default class App {
+
+  // Constructor
 
   constructor() {
 
@@ -28,16 +28,19 @@ export default class App {
 
     // Properties
 
-    this.eyes = [];
+    this.creatures = [];
 
 
     // Start
 
     this.initView();
-    this.initEyes();
+    this.makeCreatures();
     this.start();
 
   }
+
+
+  // Methods
 
   initView() {
 
@@ -45,52 +48,20 @@ export default class App {
 
   }
 
-  initEyes() {
+  makeCreatures() {
 
-    for (let i = 0; i < TOTAL_COUNT; i++) {
+    for (let i = 0; i < CREATURE_COUNT; i++) {
 
-      let eye   = new Eye();
+      let creature   = new Creature();
 
-      App.stage.addChild(eye);
+      App.stage.addChild(creature);
 
-      this.eyes.push(eye);
+      this.creatures.push(creature);
 
     }
 
   }
 
-
-  // Functions
-
-  start() {
-
-    this.queueAnUpdate();
-
-  }
-
-  queueAnUpdate() {
-
-    const delay = random.num(UPDATE_DELAY_MIN, UPDATE_DELAY_MAX);
-
-    setTimeout(() => {
-      this.updateAnEye();
-      this.queueAnUpdate();
-    }, delay);
-
-  }
-
-  updateAnEye() {
-
-    let eye = random.item(this.eyes);
-
-    if (eye.isOpen) {
-      eye.shut();
-
-    } else {
-      eye.move();
-      eye.open();
-    }
-
-  }
+  start() { }
 
 }

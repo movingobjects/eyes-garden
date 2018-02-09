@@ -59,7 +59,12 @@ const eyeShutSeq = [
   eyeShut16
 ];
 
+
+// Class
+
 export default class Eye extends PIXI.Container {
+
+  // Constructor
 
   constructor() {
 
@@ -84,6 +89,9 @@ export default class Eye extends PIXI.Container {
     this.move();
 
   }
+
+
+  // Methods
 
   move() {
     this.x = Math.random() * App.W;

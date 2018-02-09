@@ -54,7 +54,7 @@
     "log-box": "^0.4.1",
     "minimist": "^1.2.0",
     "pixi.js": "^4.7.0",
-    "varyd-utils": "^0.6.5"
+    "varyd-utils": "^1.0.0"
   },
   "log-box": {
     "default": {
