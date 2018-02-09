@@ -23,7 +23,11 @@ export default class App {
     App.elem    = document.getElementById('app');
     App.W       = App.elem.clientWidth,
     App.H       = App.elem.clientHeight;
-    App.pixiApp = new PIXI.Application(App.W, App.H);
+    App.pixiApp = new PIXI.Application({
+      width: App.W,
+      height: App.H,
+      backgroundColor: 0x000000
+    });
     App.stage   = App.pixiApp.stage;
 
     // Properties

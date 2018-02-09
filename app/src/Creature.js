@@ -86,7 +86,7 @@ export default class Creature extends PIXI.Container {
 
     requestAnimationFrame(this.onFrame);
 
-    //this.queueEyeUpdate();
+    this.queueEyeUpdate();
 
   }
 
@@ -117,7 +117,7 @@ export default class Creature extends PIXI.Container {
           eye.x = pt.x;
           eye.y = pt.y;
 
-      eye.open();
+      //eye.open();
 
       this.body.drawCircle(pt.x, pt.y, 60);
 
@@ -125,6 +125,8 @@ export default class Creature extends PIXI.Container {
       this.eyes.push(eye)
 
     }
+
+    this.body.endFill();
 
   }
 
