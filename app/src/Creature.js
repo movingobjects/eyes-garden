@@ -18,8 +18,9 @@ const RADIUS_RANGE         = new Range(500, 1500),
       SCALE_RANGE          = new Range(0.15, 0.35),
       OPEN_SHUT_SECS_RANGE = new Range(1, 5),
       BLINK_SECS_RANGE     = new Range(2, 20),
-      DART_EYES_RANGE      = new Range(0.25, 5),
-      VEL_RANGE            = new Range(-5, 5);
+      DART_EYES_SECS_RANGE = new Range(0.25, 5),
+      STEP_SECS_RANGE      = new Range(5, 10),
+      STEP_COUNT_RANGE     = new Range(1, 5);
 
 const BODY_BG_COLOR        = 0x000000;
 
@@ -34,22 +35,17 @@ export default class Creature extends PIXI.Container {
 
     super();
 
-    this.initBindings();
     this.initState();
 
     this.makeEyes();
     this.start();
 
   }
-  initBindings() {
-    this.onFrame = this.onFrame.bind(this);
-  }
   initState() {
 
 
     this.eyeScale = random.num(SCALE_RANGE.min, SCALE_RANGE.max);
     this.radius   = random.int(RADIUS_RANGE.min, RADIUS_RANGE.max) * this.eyeScale;
-    this.velX     = random.num(-3, 3);
 
     this.eyeCount = Math.round(maths.map(this.radius, RADIUS_RANGE.min * this.eyeScale, RADIUS_RANGE.max * this.eyeScale, EYE_COUNT_RANGE.min, EYE_COUNT_RANGE.max, true))
     this.eyes     = [];
@@ -58,33 +54,14 @@ export default class Creature extends PIXI.Container {
     this.y        = this.getRandomY();
 
     this.gazePt   = undefined;
+    this.stepping = false;
 
   }
 
 
   // Event handlers
 
-  onFrame() {
-
-    if (this.velX !== 0) {
-
-      const xMin = -RADIUS_RANGE.max,
-            xMax = App.W + RADIUS_RANGE.max;
-
-      this.x += this.velX;
-
-      if ((this.velX > 0) && (this.x > xMax)) {
-        this.x = xMin;
-        this.y = this.getRandomY();
-      }
-
-      if ((this.velX < 0) && (this.x < xMin)) {
-        this.x = xMax;
-        this.y = this.getRandomY();
-
-      }
-
-    }
+  nextFrame() {
 
     if (this.gazePt) {
       this.eyes.forEach((eye) => {
@@ -92,9 +69,7 @@ export default class Creature extends PIXI.Container {
       })
     }
 
-    this.eyes.forEach((eye) => eye.update());
-
-    requestAnimationFrame(this.onFrame);
+    this.eyes.forEach((eye) => eye.nextFrame());
 
   }
 
@@ -103,11 +78,10 @@ export default class Creature extends PIXI.Container {
 
   start() {
 
-    requestAnimationFrame(this.onFrame);
-
     this.queueEyeUpdate();
     this.queueBlink();
     this.queueDartEyes();
+    //this.queueSteps();
 
   }
 
@@ -194,7 +168,7 @@ export default class Creature extends PIXI.Container {
     setTimeout(() => {
       this.dartEyes();
       this.queueDartEyes();
-    }, DART_EYES_RANGE.random * 1000);
+    }, DART_EYES_SECS_RANGE.random * 1000);
 
   }
   dartEyes() {
@@ -207,6 +181,18 @@ export default class Creature extends PIXI.Container {
 
   }
 
+  queueSteps() {
+
+    setTimeout(() => {
+
+      if (!this.stepping) {
+        this.step(STEP_COUNT_RANGE.random);
+      }
+      this.queueSteps();
+    }, STEP_SECS_RANGE.random * 1000);
+
+  }
+
   lookAt(pt) {
     this.gazePt = pt;
     if (random.boolean()) {
@@ -215,14 +201,79 @@ export default class Creature extends PIXI.Container {
   }
   lookForward(pt) {
 
-    const anglePerc = (this.velX < 1) ? 0.75 : 0.25,
-          amt       = maths.map(Math.abs(this.velX), 0, VEL_RANGE.max, 0.1, 1);
+    this.gazePt = undefined;
 
     this.eyes.forEach((eye) => {
-      eye.look(anglePerc, amt);
+      eye.look(random.num(), 0.1);
     });
 
-    this.gazePt = undefined;
+  }
+
+  wake() {
+    this.eyes.forEach((eye) => eye.open());
+  }
+
+  step(times) {
+
+    this.stepping = true;
+
+    const dirX = random.sign(),
+          dirY = random.sign();
+
+    const STEP_X_RANGE = new Range(50, 150),
+          STEP_Y_RANGE = new Range(50, 100),
+          CTRL_PT_Y_OFFSET_RANGE = new Range(-25, -50);
+
+    let pts = [{
+      x: this.x,
+      y: this.y
+    }];
+
+    let duration = 0;
+
+    for (let i = 1; i < times; i++) {
+
+      let lastPt = pts[i - 1];
+      let nextPt = {
+        x: lastPt.x + (dirX * STEP_X_RANGE.random),
+        y: lastPt.y + (dirY * STEP_Y_RANGE.random)
+      }
+
+      duration += 4 * geom.dist(lastPt, nextPt);
+
+      pts.push(nextPt);
+
+    }
+
+    var path = new PIXI.tween.TweenPath();
+        path.moveTo(this.x, this.y);
+
+    pts.forEach((pt, i) => {
+      if (i > 0) {
+
+        let lastPt = pts[i - 1],
+            ptA    = geom.lerpPt(lastPt, pt, 0.333),
+            ptB    = geom.lerpPt(lastPt, pt, 0.666);
+
+        let cpAx   = ptA.x,
+            cpBx   = ptB.x,
+            cpAy   = ptA.y + CTRL_PT_Y_OFFSET_RANGE.random,
+            cpBy   = ptB.y + CTRL_PT_Y_OFFSET_RANGE.random;
+
+        path.bezierCurveTo(cpAx, cpAy, cpBx, cpBy, pt.x, pt.y);
+
+      }
+    })
+
+    var tween        = PIXI.tweenManager.createTween(this);
+        tween.path   = path;
+        tween.time   = duration;
+        tween.easing = PIXI.tween.Easing.linear();
+        tween.expire = true;
+        tween.on('end', () => {
+          this.stepping = false;
+        })
+        tween.start();
 
   }
 

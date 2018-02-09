@@ -2,9 +2,12 @@
 // Imports
 
 import * as PIXI from 'pixi.js';
+import * as tweenManager from 'pixi-tween';
+
 import { random } from 'varyd-utils';
 
 import Creature from './Creature';
+
 
 
 // Constants
@@ -18,39 +21,56 @@ export default class App {
 
   constructor() {
 
-    // Static
-
-    App.elem    = document.getElementById('app');
-    App.W       = App.elem.clientWidth,
-    App.H       = App.elem.clientHeight;
-    App.pixiApp = new PIXI.Application({
-      width: App.W,
-      height: App.H,
-      backgroundColor: 0x000000
-    });
-    App.stage   = App.pixiApp.stage;
-
-    // Properties
-
     this.creatures = [];
 
+    this.initBindings();
+    this.initApp();
+    this.initPIXI();
 
-    // Start
-
-    this.initView();
     this.makeCreatures();
     this.start();
 
   }
 
+  initBindings() {
+    this.onFrame = this.onFrame.bind(this);
+  }
+  initApp() {
 
-  // Methods
+    App.elem    = document.getElementById('app');
 
-  initView() {
+    App.W       = App.elem.clientWidth,
+    App.H       = App.elem.clientHeight;
 
+  }
+  initPIXI() {
+
+    App.pixiApp = new PIXI.Application({
+      width: App.W,
+      height: App.H,
+      backgroundColor: 0x000000
+    });
+
+    App.stage   = App.pixiApp.stage;
     App.elem.appendChild(App.pixiApp.view);
 
   }
+
+
+  // Event Handlers
+
+  onFrame() {
+
+    PIXI.tweenManager.update();
+
+    this.creatures.forEach((creature) => creature.nextFrame());
+
+    requestAnimationFrame(this.onFrame);
+
+  }
+
+
+  // Methods
 
   makeCreatures() {
 
@@ -58,14 +78,20 @@ export default class App {
 
       let creature   = new Creature();
 
-      App.stage.addChild(creature);
-
       this.creatures.push(creature);
+
+      App.stage.addChild(creature);
 
     }
 
+
+
   }
 
-  start() { }
+  start() {
+
+    requestAnimationFrame(this.onFrame);
+
+  }
 
 }

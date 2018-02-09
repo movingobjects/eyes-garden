@@ -212,7 +212,7 @@ export default class Eye extends PIXI.Container {
     this.irisTrgtY = 0;
   }
 
-  update() {
+  nextFrame() {
 
     if (this.iris.x !== this.irisTrgtX) {
       this.iris.x = maths.ease(this.iris.x, this.irisTrgtX, IRIS_EASE, 0.5);
