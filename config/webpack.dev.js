@@ -6,7 +6,7 @@ const { DefinePlugin } = require('webpack'),
 module.exports = merge(common, {
 
   target: 'electron',
-  devtool: 'cheap-inline-source-map',
+  devtool: 'inline-cheap-source-map',
 
   plugins: [
     new DefinePlugin({
