@@ -5,6 +5,7 @@ import * as PIXI from 'pixi.js';
 import * as tweenManager from 'pixi-tween';
 
 import { random } from 'varyd-utils';
+import { Range } from 'varyd-utils';
 
 import Creature from './Creature';
 
@@ -12,7 +13,8 @@ import Creature from './Creature';
 
 // Constants
 
-const CREATURE_COUNT   = 7;
+const CREATURE_COUNT              = 10,
+      CREATURE_REFRESH_SECS_RANGE = new Range(3, 5);
 
 
 export default class App {
@@ -41,6 +43,8 @@ export default class App {
 
     App.W       = App.elem.clientWidth,
     App.H       = App.elem.clientHeight;
+
+    App.allEyes = [];
 
   }
   initPIXI() {
@@ -75,22 +79,57 @@ export default class App {
   makeCreatures() {
 
     for (let i = 0; i < CREATURE_COUNT; i++) {
-
-      let creature   = new Creature();
-
-      this.creatures.push(creature);
-
-      App.stage.addChild(creature);
-
+      this.addCreature();
     }
 
+  }
 
+  addCreature() {
+
+    let creature   = new Creature();
+
+    this.creatures.push(creature);
+
+    App.stage.addChild(creature);
+
+  }
+  exitCreature() {
+
+    let creature = this.creatures.shift();
+
+    if (creature) {
+      creature.exit();
+    }
+
+    setTimeout(() => {
+      App.stage.removeChild(creature);
+    }, 3000)
 
   }
 
   start() {
 
+    this.queueCreatureRefresh();
+
     requestAnimationFrame(this.onFrame);
+
+  }
+
+  queueCreatureRefresh() {
+
+    clearTimeout(this.timeoutCreatureRefresh);
+
+    this.timeoutCreatureRefresh = setTimeout(() => {
+
+      if (this.creatures.length < CREATURE_COUNT) {
+        this.addCreature();
+      } else {
+        this.exitCreature();
+      }
+
+      this.queueCreatureRefresh();
+
+    }, CREATURE_REFRESH_SECS_RANGE.random * 1000)
 
   }
 

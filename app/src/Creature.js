@@ -43,6 +43,10 @@ export default class Creature extends PIXI.Container {
   }
   initState() {
 
+    this.timeoutOpenShut = -1;
+    this.timeoutBlink    = -1;
+    this.timeoutDartEyes = -1;
+    this.timeoutSteps    = -1;
 
     this.eyeScale = random.num(SCALE_RANGE.min, SCALE_RANGE.max);
     this.radius   = random.int(RADIUS_RANGE.min, RADIUS_RANGE.max) * this.eyeScale;
@@ -78,7 +82,7 @@ export default class Creature extends PIXI.Container {
 
   start() {
 
-    this.queueEyeUpdate();
+    this.queueOpenShut();
     this.queueBlink();
     this.queueDartEyes();
     //this.queueSteps();
@@ -86,30 +90,44 @@ export default class Creature extends PIXI.Container {
   }
 
   makeEyes() {
-
     const minDistX  = 325 * this.eyeScale,
-          minDistY  = 175 * this.eyeScale,
-          minDistSq = Math.pow(300 * this.eyeScale, 2)
+          minDistY  = 175 * this.eyeScale;
 
     const overlapsAnEye = (pt) => {
-      const overlap = this.eyes.find((eye) => {
-        return ((maths.diff(eye.x, pt.x) < minDistX) && (maths.diff(eye.y, pt.y) < minDistY))
-            || (geom.distSqXY(eye.x, eye.y, pt.x, pt.y) < minDistSq);
+
+      let thisPt = this.toGlobal(pt);
+
+      const overlap = App.allEyes.find((eye) => {
+
+        let thatPt  = eye.parent.toGlobal(new PIXI.Point(eye.x, eye.y)),
+            minDist = (300 * Math.max(this.eyeScale, eye.eyeScale));
+
+        return (geom.dist(thisPt, thatPt) < minDist);
+
       })
+
       return !!overlap;
+
     };
 
     this.body = new PIXI.Graphics();
     this.body.beginFill(BODY_BG_COLOR);
-    this.addChild(this.body);
+    //this.addChild(this.body);
 
     for (let i = 0; i < this.eyeCount; i++) {
 
-      let pt;
+      let pt,
+          tries = 0;
 
       do {
         pt   = random.ptInCircle(this.radius);
         pt.y /= 2;
+
+        if (++tries >= 100) {
+          this.eyeCount = i;
+          return;
+        }
+
       } while (overlapsAnEye(pt))
 
       let eye   = new Eye(this.eyeScale);
@@ -127,15 +145,17 @@ export default class Creature extends PIXI.Container {
 
   }
 
-  queueEyeUpdate() {
+  queueOpenShut() {
 
-    setTimeout(() => {
-      this.updateAnEye();
-      this.queueEyeUpdate();
+    clearTimeout(this.timeoutOpenShut);
+
+    this.timeoutOpenShut = setTimeout(() => {
+      this.openShut();
+      this.queueOpenShut();
     }, OPEN_SHUT_SECS_RANGE.random * 1000);
 
   }
-  updateAnEye() {
+  openShut() {
 
     let eye = random.item(this.eyes);
 
@@ -151,7 +171,9 @@ export default class Creature extends PIXI.Container {
 
   queueBlink() {
 
-    setTimeout(() => {
+    clearTimeout(this.timeoutBlink);
+
+    this.timeoutBlink = setTimeout(() => {
       this.blink();
       this.queueBlink();
     }, BLINK_SECS_RANGE.random * 1000);
@@ -165,7 +187,9 @@ export default class Creature extends PIXI.Container {
 
   queueDartEyes() {
 
-    setTimeout(() => {
+    clearTimeout(this.timeoutDartEyes);
+
+    this.timeoutDartEyes = setTimeout(() => {
       this.dartEyes();
       this.queueDartEyes();
     }, DART_EYES_SECS_RANGE.random * 1000);
@@ -178,18 +202,6 @@ export default class Creature extends PIXI.Container {
     } else {
       this.lookAt(new PIXI.Point(this.getRandomX(), this.getRandomY()));
     }
-
-  }
-
-  queueSteps() {
-
-    setTimeout(() => {
-
-      if (!this.stepping) {
-        this.step(STEP_COUNT_RANGE.random);
-      }
-      this.queueSteps();
-    }, STEP_SECS_RANGE.random * 1000);
 
   }
 
@@ -209,10 +221,19 @@ export default class Creature extends PIXI.Container {
 
   }
 
-  wake() {
-    this.eyes.forEach((eye) => eye.open());
-  }
+  queueSteps() {
 
+    clearTimeout(this.timeoutSteps);
+
+    this.timeoutSteps = setTimeout(() => {
+
+      if (!this.stepping) {
+        this.step(STEP_COUNT_RANGE.random);
+      }
+      this.queueSteps();
+    }, STEP_SECS_RANGE.random * 1000);
+
+  }
   step(times) {
 
     this.stepping = true;
@@ -274,6 +295,26 @@ export default class Creature extends PIXI.Container {
           this.stepping = false;
         })
         tween.start();
+
+  }
+
+  wake() {
+    this.eyes.forEach((eye) => eye.open());
+  }
+  exit() {
+
+    clearTimeout(this.timeoutOpenShut);
+    clearTimeout(this.timeoutBlink);
+    clearTimeout(this.timeoutDartEyes);
+    clearTimeout(this.timeoutSteps);
+
+    this.eyes.forEach((eye) => {
+      setTimeout(() => {
+        if (eye.isOpen) {
+          eye.exit();
+        }
+      }, random.int(0, 2000));
+    });
 
   }
 
