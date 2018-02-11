@@ -1,4 +1,4 @@
-# Four Eyes projection
+# Eyes Garden
 
 Projection for [Four Eyes](http://foureyes.studio).
 
