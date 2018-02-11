@@ -13,7 +13,7 @@ app.on('ready', () => {
     height: 768,
     backgroundColor: '#000',
     fullscreenable: true,
-    fullscreen: false
+    fullscreen: true
   });
 
   win.loadURL(`file://${__dirname}/app/build/index.html`);
