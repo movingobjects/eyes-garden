@@ -10,7 +10,6 @@ import { Range } from 'varyd-utils';
 import Creature from './Creature';
 
 
-
 // Constants
 
 const CREATURE_COUNT              = 10,
@@ -118,6 +117,16 @@ export default class App {
   queueCreatureRefresh() {
 
     clearTimeout(this.timeoutCreatureRefresh);
+
+    // TODO: gotta be more elegant way to do this
+    for (let i =0; i < this.creatures.length; i++) {
+      let creature = this.creatures[i];
+      if (!creature.eyeCount) {
+        this.creatures.splice(i, 1)
+        creature.exit();
+        i--;
+      }
+    }
 
     this.timeoutCreatureRefresh = setTimeout(() => {
 

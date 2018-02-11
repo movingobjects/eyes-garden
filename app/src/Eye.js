@@ -62,7 +62,8 @@ import imgBlink8 from './images/eye-blink/eye-blink-8.png';
 // Constants
 
 const IRIS_EASE  = 0.2,
-      MASK_COLOR = 0x000000;
+      MASK_COLOR = 0x000000,
+      START_OPEN = false;
 
 const imgSeqEyeOpen = [
   imgOpen1, imgOpen2, imgOpen3, imgOpen4, imgOpen5,
@@ -100,6 +101,10 @@ export default class Eye extends PIXI.Container {
 
     this.initState();
     this.makeEye();
+
+    if (START_OPEN) {
+      this.open();
+    }
 
   }
 
