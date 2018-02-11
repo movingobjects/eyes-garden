@@ -1,16 +1,16 @@
 {
-  "name": "four-eyes-projection",
+  "name": "eyes-garden",
   "version": "0.1.0",
-  "description": "Project for Four Eyes",
+  "description": "Projection for Four Eyes",
   "author": "Scott Thiessen (http://varyd.io)",
   "license": "ISC",
-  "homepage": "https://github.com/sccottt/four-eyes-projection#readme",
+  "homepage": "https://github.com/sccottt/eyes-garden#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sccottt/four-eyes-projection.git"
+    "url": "git+https://github.com/sccottt/eyes-garden.git"
   },
   "bugs": {
-    "url": "https://github.com/sccottt/four-eyes-projection/issues"
+    "url": "https://github.com/sccottt/eyes-garden/issues"
   },
   "engines": {
     "node": ">=8",
