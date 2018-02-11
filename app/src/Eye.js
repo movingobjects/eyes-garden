@@ -95,8 +95,6 @@ export default class Eye extends PIXI.Container {
 
     super();
 
-    App.allEyes.push(this);
-
     this.eyeScale = scale;
 
     this.initState();
@@ -250,20 +248,6 @@ export default class Eye extends PIXI.Container {
       this.blinkAnim.gotoAndPlay(0);
       this.openAnim.gotoAndStop(this.lastOpenFrame);
       this.shutAnim.gotoAndStop(0);
-    }
-
-  }
-
-  exit() {
-
-    if (this.isOpen) {
-      this.shut();
-    }
-
-    let eyeIndex = App.allEyes.indexOf(this);
-
-    if (eyeIndex > -1) {
-      App.allEyes.splice(eyeIndex, 1);
     }
 
   }

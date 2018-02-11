@@ -12,7 +12,7 @@ import Creature from './Creature';
 
 // Constants
 
-const CREATURE_COUNT              = 10,
+const CREATURE_COUNT              = 12,
       CREATURE_REFRESH_SECS_RANGE = new Range(3, 5);
 
 
@@ -25,6 +25,7 @@ export default class App {
     this.creatures = [];
 
     this.initBindings();
+    this.initState();
     this.initApp();
     this.initPIXI();
 
@@ -34,16 +35,17 @@ export default class App {
   }
 
   initBindings() {
-    this.onFrame = this.onFrame.bind(this);
+
+    this.onFrame           = this.onFrame.bind(this);
+
   }
+  initState() { }
   initApp() {
 
     App.elem    = document.getElementById('app');
 
     App.W       = App.elem.clientWidth,
     App.H       = App.elem.clientHeight;
-
-    App.allEyes = [];
 
   }
   initPIXI() {
@@ -100,10 +102,12 @@ export default class App {
 
   addCreature() {
 
-    let creature   = new Creature();
-        creature.on('gone', (e) => {
-          this.onCreatureGone(e);
-        })
+    let allEyes = this.creatures.reduce((eyes, creature) => {
+      return eyes.concat(creature.eyes)
+    }, []);
+
+    let creature   = new Creature(allEyes);
+        creature.on('gone', this.onCreatureGone, this);
 
     this.creatures.push(creature);
 
@@ -131,16 +135,6 @@ export default class App {
   queueCreatureRefresh() {
 
     clearTimeout(this.timeoutCreatureRefresh);
-
-    // TODO: gotta be more elegant way to do this
-    for (let i =0; i < this.creatures.length; i++) {
-      let creature = this.creatures[i];
-      if (!creature.eyeCount) {
-        this.creatures.splice(i, 1)
-        creature.exit();
-        i--;
-      }
-    }
 
     this.timeoutCreatureRefresh = setTimeout(() => {
 

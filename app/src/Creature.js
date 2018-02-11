@@ -20,8 +20,6 @@ const RADIUS_RANGE         = new Range(500, 1500),
       BLINK_SECS_RANGE     = new Range(2, 20),
       DART_EYES_SECS_RANGE = new Range(0.25, 5);
 
-const BODY_BG_COLOR        = 0x000000;
-
 
 // Class
 
@@ -29,13 +27,13 @@ export default class Creature extends PIXI.Container {
 
   // Constructor
 
-  constructor() {
+  constructor(otherEyes) {
 
     super();
 
     this.initState();
+    this.makeEyes(otherEyes);
 
-    this.makeEyes();
     this.start();
 
   }
@@ -85,30 +83,25 @@ export default class Creature extends PIXI.Container {
 
   }
 
-  makeEyes() {
-    const minDistX  = 325 * this.eyeScale,
-          minDistY  = 175 * this.eyeScale;
+  makeEyes(otherEyes) {
 
     const overlapsAnEye = (pt) => {
 
       let thisPt = this.toGlobal(pt);
 
-      const overlap = App.allEyes.find((eye) => {
+      const overlap = otherEyes.find((otherEye) => {
 
-        let thatPt  = eye.parent.toGlobal(new PIXI.Point(eye.x, eye.y)),
-            minDist = (300 * Math.max(this.eyeScale, eye.eyeScale));
+        let minDist      = 300 * Math.max(this.eyeScale, otherEye.eyeScale),
+            otherPtLocal = new PIXI.Point(otherEye.x, otherEye.y),
+            otherPt      = otherEye.parent.toGlobal(otherPtLocal);
 
-        return (geom.dist(thisPt, thatPt) < minDist);
+        return (geom.dist(thisPt, otherPt) < minDist);
 
       })
 
       return !!overlap;
 
     };
-
-    this.body = new PIXI.Graphics();
-    this.body.beginFill(BODY_BG_COLOR);
-    //this.addChild(this.body);
 
     for (let i = 0; i < this.eyeCount; i++) {
 
@@ -130,14 +123,12 @@ export default class Creature extends PIXI.Container {
           eye.x = pt.x;
           eye.y = pt.y;
 
-      this.body.drawCircle(pt.x, pt.y, 300 * this.eyeScale);
+      otherEyes.push(eye);
 
       this.addChild(eye);
-      this.eyes.push(eye)
+      this.eyes.push(eye);
 
     }
-
-    this.body.endFill();
 
   }
 
@@ -196,7 +187,7 @@ export default class Creature extends PIXI.Container {
     if (random.boolean()) {
       this.lookForward();
     } else {
-      this.lookAt(new PIXI.Point(this.getRandomX(), this.getRandomY()));
+      this.lookAt(this.getRandomPt());
     }
 
   }
@@ -231,7 +222,7 @@ export default class Creature extends PIXI.Container {
     this.eyes.forEach((eye) => {
       setTimeout(() => {
         if (eye.isOpen) {
-          eye.exit();
+          eye.shut();
         }
       }, random.int(0, 2000));
     });
@@ -247,6 +238,9 @@ export default class Creature extends PIXI.Container {
 
   // Helpers
 
+  getRandomPt() {
+    return new PIXI.Point(this.getRandomX(), this.getRandomY());
+  }
   getRandomX() {
     return random.int(App.W);
   }
