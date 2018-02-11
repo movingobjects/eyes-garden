@@ -12,7 +12,7 @@ import Creature from './Creature';
 
 // Constants
 
-const CREATURE_COUNT              = 12,
+const CREATURE_COUNT_PER_PX_SQ    = 10 / (1280 * 800),
       CREATURE_REFRESH_SECS_RANGE = new Range(3, 5);
 
 
@@ -97,7 +97,10 @@ export default class App {
 
   makeCreatures() {
 
-    for (let i = 0; i < CREATURE_COUNT; i++) {
+    let pxSq  = (window.innerWidth * window.innerHeight),
+        count = Math.round(CREATURE_COUNT_PER_PX_SQ * pxSq);
+
+    for (let i = 0; i < count; i++) {
       this.addCreature();
     }
 
@@ -141,7 +144,10 @@ export default class App {
 
     this.timeoutCreatureRefresh = setTimeout(() => {
 
-      if (this.creatures.length < CREATURE_COUNT) {
+      let pxSq  = (window.innerWidth * window.innerHeight),
+          count = Math.round(CREATURE_COUNT_PER_PX_SQ * pxSq);
+
+      if (this.creatures.length < count) {
         this.addCreature();
       } else {
         this.exitCreature();

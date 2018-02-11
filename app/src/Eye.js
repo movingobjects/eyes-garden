@@ -81,10 +81,10 @@ const imgSeqBlink = [
   imgBlink6, imgBlink7, imgBlink8
 ];
 
-const START_OPEN = false,
-      IRIS_EASE  = 0.2,
-      MASK_COLOR = 0x000000,
-      IRIS_COLOR = 0x000000;
+const DEBUG_DISABLE_SHUT = false,
+      IRIS_EASE          = 0.2,
+      MASK_COLOR         = 0x000000,
+      IRIS_COLOR         = 0x000000;
 
 const IRIS_LOOK_DIST_RANGE = new Range(5, 75);
 
@@ -104,7 +104,7 @@ export default class Eye extends PIXI.Container {
     this.initState();
     this.makeEye();
 
-    if (START_OPEN) {
+    if (DEBUG_DISABLE_SHUT) {
       this.open();
     }
 
@@ -201,6 +201,8 @@ export default class Eye extends PIXI.Container {
 
   }
   shut() {
+
+    if (DEBUG_DISABLE_SHUT) return;
 
     this.isOpen = false;
 
