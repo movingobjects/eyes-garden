@@ -245,10 +245,10 @@ export default class Creature extends PIXI.Container {
     return new PIXI.Point(this.getRandomX(), this.getRandomY());
   }
   getRandomX() {
-    return random.int(App.W);
+    return random.int(window.innerWidth);
   }
   getRandomY() {
-    return random.int(App.H);
+    return random.int(window.innerHeight);
   }
 
 }

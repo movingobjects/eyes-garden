@@ -1,15 +1,17 @@
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow } = require('electron'),
+      electronReload         = require('electron-reload');
 
-require('electron-reload')(__dirname + '/app/build/');
+let win;
 
-let win; // (prevents garbage collection)
+electronReload(__dirname + '/app/build/');
 
 app.on('ready', () => {
 
   win = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: 1024,
+    height: 768,
+    backgroundColor: '#000',
     fullscreenable: true,
     fullscreen: false
   });

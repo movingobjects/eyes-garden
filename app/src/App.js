@@ -25,8 +25,6 @@ export default class App {
     this.creatures = [];
 
     this.initBindings();
-    this.initState();
-    this.initApp();
     this.initPIXI();
 
     this.makeCreatures();
@@ -39,25 +37,30 @@ export default class App {
     this.onFrame           = this.onFrame.bind(this);
 
   }
-  initState() { }
-  initApp() {
-
-    App.elem    = document.getElementById('app');
-
-    App.W       = App.elem.clientWidth,
-    App.H       = App.elem.clientHeight;
-
-  }
   initPIXI() {
 
-    App.pixiApp = new PIXI.Application({
-      width: App.W,
-      height: App.H,
-      backgroundColor: 0x000000
+    const pixiApp = new PIXI.Application({
+      width: window.innerWidth,
+      height: window.innerHeight
     });
 
-    App.stage   = App.pixiApp.stage;
-    App.elem.appendChild(App.pixiApp.view);
+    this.stage    = pixiApp.stage;
+
+    const elemApp = document.getElementById('app');
+          elemApp.appendChild(pixiApp.view);
+
+
+    window.onresize = () => {
+
+      let w = window.innerWidth,
+          h = window.innerHeight;
+
+      pixiApp.renderer.view.style.width  = w + "px";
+      pixiApp.renderer.view.style.height = h + "px";
+
+      pixiApp.renderer.resize(w,h);
+
+    }
 
   }
 
@@ -81,7 +84,7 @@ export default class App {
 
     creature.removeAllListeners();
 
-    App.stage.removeChild(creature);
+    this.stage.removeChild(creature);
 
     if (index != -1) {
       this.creatures.splice(index, 1);
@@ -111,7 +114,7 @@ export default class App {
 
     this.creatures.push(creature);
 
-    App.stage.addChild(creature);
+    this.stage.addChild(creature);
 
   }
   exitCreature() {
