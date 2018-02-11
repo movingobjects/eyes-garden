@@ -72,6 +72,21 @@ export default class App {
 
   }
 
+  onCreatureGone(e) {
+
+    let creature = e.target,
+        index    = this.creatures.indexOf(creature);
+
+    creature.removeAllListeners();
+
+    App.stage.removeChild(creature);
+
+    if (index != -1) {
+      this.creatures.splice(index, 1);
+    }
+
+  }
+
 
   // Methods
 
@@ -86,6 +101,9 @@ export default class App {
   addCreature() {
 
     let creature   = new Creature();
+        creature.on('gone', (e) => {
+          this.onCreatureGone(e);
+        })
 
     this.creatures.push(creature);
 
@@ -94,15 +112,11 @@ export default class App {
   }
   exitCreature() {
 
-    let creature = this.creatures.shift();
+    let creature = this.creatures[0];
 
     if (creature) {
       creature.exit();
     }
-
-    setTimeout(() => {
-      App.stage.removeChild(creature);
-    }, 3000)
 
   }
 

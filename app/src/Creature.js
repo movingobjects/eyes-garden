@@ -54,6 +54,7 @@ export default class Creature extends PIXI.Container {
     this.x        = this.getRandomX();
     this.y        = this.getRandomY();
 
+    this.exiting  = false;
     this.gazePt   = undefined;
 
   }
@@ -221,6 +222,8 @@ export default class Creature extends PIXI.Container {
   }
   exit() {
 
+    this.exiting = true;
+
     clearTimeout(this.timeoutOpenShut);
     clearTimeout(this.timeoutBlink);
     clearTimeout(this.timeoutDartEyes);
@@ -232,6 +235,12 @@ export default class Creature extends PIXI.Container {
         }
       }, random.int(0, 2000));
     });
+
+    setTimeout(() => {
+      this.emit('gone', {
+        target: this
+      });
+    }, 3000);
 
   }
 

@@ -11,7 +11,7 @@ app.on('ready', () => {
     width: 1280,
     height: 800,
     fullscreenable: true,
-    fullscreen: true
+    fullscreen: false
   });
 
   win.loadURL(`file://${__dirname}/app/build/index.html`);
