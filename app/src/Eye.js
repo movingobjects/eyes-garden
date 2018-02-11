@@ -5,6 +5,7 @@ import './styles/style.scss';
 
 import * as PIXI from 'pixi.js';
 import { maths, random, geom } from 'varyd-utils';
+import { Range } from 'varyd-utils';
 
 import App from './App';
 
@@ -61,10 +62,6 @@ import imgBlink8 from './images/eye-blink/eye-blink-8.png';
 
 // Constants
 
-const IRIS_EASE  = 0.2,
-      MASK_COLOR = 0x000000,
-      START_OPEN = false;
-
 const imgSeqEyeOpen = [
   imgOpen1, imgOpen2, imgOpen3, imgOpen4, imgOpen5,
   imgOpen6, imgOpen7, imgOpen8, imgOpen9, imgOpen10,
@@ -83,6 +80,13 @@ const imgSeqBlink = [
   imgBlink1, imgBlink2, imgBlink3, imgBlink4, imgBlink5,
   imgBlink6, imgBlink7, imgBlink8
 ];
+
+const START_OPEN = false,
+      IRIS_EASE  = 0.2,
+      MASK_COLOR = 0x000000,
+      IRIS_COLOR = 0x000000;
+
+const IRIS_LOOK_DIST_RANGE = new Range(5, 75);
 
 
 // Class
@@ -144,7 +148,7 @@ export default class Eye extends PIXI.Container {
         iris.anchor.set(0.5);
         iris.rotation            = random.num(0, Math.PI * 2);
         iris.scale               = new PIXI.Point(this.eyeScale, this.eyeScale);
-        iris.tint                = 0x000000;
+        iris.tint                = IRIS_COLOR;
     this.iris                    = iris;
     this.addChild(this.iris);
 
@@ -188,23 +192,28 @@ export default class Eye extends PIXI.Container {
   }
 
   open() {
+
     this.isOpen = true;
+
     this.openAnim.gotoAndPlay(0);
     this.shutAnim.gotoAndStop(0);
     this.blinkAnim.gotoAndStop(this.lastBlinkFrame);
+
   }
   shut() {
 
     this.isOpen = false;
+
     this.openAnim.gotoAndStop(this.lastOpenFrame);
     this.shutAnim.gotoAndPlay(0);
     this.blinkAnim.gotoAndStop(this.lastBlinkFrame);
+
   }
 
   look(anglePerc, amt) {
 
-    let circRad = maths.lerp(5, 75, amt, true) * this.eyeScale,
-        irisPt = geom.ptAroundCircle(circRad, anglePerc);
+    let circRad = IRIS_LOOK_DIST_RANGE.lerp(amt, true) * this.eyeScale,
+        irisPt  = geom.ptAroundCircle(circRad, anglePerc);
 
     this.irisTrgtX = irisPt.x;
     this.irisTrgtY = irisPt.y;
@@ -212,12 +221,15 @@ export default class Eye extends PIXI.Container {
   }
   lookToward(pt) {
 
+    const DIST_SQ_NEAR = Math.pow(10, 2),
+          DIST_SQ_FAR  = Math.pow(200, 2);
+
     let gPt       = this.toGlobal(new PIXI.Point(0, 0)),
         rads      = Math.atan2(pt.y - gPt.y, pt.x - gPt.x) + (Math.PI * 0.5),
         anglePerc = rads / (Math.PI * 2);
 
     let distSq    = geom.distSq(pt, gPt),
-        amt       = maths.norm(distSq, (10 * 10), (200 * 200), true);
+        amt       = maths.norm(distSq, DIST_SQ_NEAR, DIST_SQ_FAR, true);
 
     this.look(anglePerc, amt);
 

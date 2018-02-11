@@ -18,7 +18,10 @@ const RADIUS_RANGE         = new Range(500, 1500),
       SCALE_RANGE          = new Range(0.05, 0.25),
       OPEN_SHUT_SECS_RANGE = new Range(1, 5),
       BLINK_SECS_RANGE     = new Range(2, 20),
-      DART_EYES_SECS_RANGE = new Range(0.25, 5);
+      DART_EYES_SECS_RANGE = new Range(0.25, 5),
+      EXIT_SECS_RANGE      = new Range(0, 2);
+
+const APPROX_EYE_WIDTH     = 300;
 
 
 // Class
@@ -91,7 +94,7 @@ export default class Creature extends PIXI.Container {
 
       const overlap = otherEyes.find((otherEye) => {
 
-        let minDist      = 300 * Math.max(this.eyeScale, otherEye.eyeScale),
+        let minDist      = APPROX_EYE_WIDTH * Math.max(this.eyeScale, otherEye.eyeScale),
             otherPtLocal = new PIXI.Point(otherEye.x, otherEye.y),
             otherPt      = otherEye.parent.toGlobal(otherPtLocal);
 
@@ -224,14 +227,14 @@ export default class Creature extends PIXI.Container {
         if (eye.isOpen) {
           eye.shut();
         }
-      }, random.int(0, 2000));
+      }, EXIT_SECS_RANGE.random * 1000);
     });
 
     setTimeout(() => {
       this.emit('gone', {
         target: this
       });
-    }, 3000);
+    }, (1 + EXIT_SECS_RANGE.max) * 1000);
 
   }
 
