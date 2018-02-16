@@ -1,7 +1,7 @@
 {
   "name": "eyes-garden",
   "productName": "Eyes Garden",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Projection for Four Eyes",
   "author": "Scott Thiessen (http://varyd.io)",
   "license": "ISC",
@@ -19,15 +19,17 @@
   },
   "main": "app/main.js",
   "scripts": {
-    "build": "node ./scripts/build.js",
     "build:web": "node ./scripts/build.js -b",
-    "enable-scripts": "chmod +x ./scripts/*",
+    "build": "node ./scripts/build.js",
+    "clean": "node ./scripts/clean -spm",
+    "clear-packages": "node ./scripts/clean.js -p",
+    "dev": "node ./scripts/build.js -w",
+    "dev:web": "node ./scripts/build.js -wb",
+    "enable-scripts": "node ./scripts/clean -s",
     "package": "node ./scripts/package.js",
     "package:win": "node ./scripts/package.js -w",
-    "reinstall": "rm -rf node_modules; npm i",
-    "start": "node ./scripts/start.js",
-    "dev": "node ./scripts/build.js -w",
-    "dev:web": "node ./scripts/build.js -wb"
+    "reinstall": "node ./scripts/clean.js -m",
+    "start": "node ./scripts/start.js"
   },
   "config": {
     "package": {
