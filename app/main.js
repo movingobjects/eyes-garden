@@ -2,9 +2,10 @@
 const { app, BrowserWindow } = require('electron'),
       electronReload         = require('electron-reload');
 
-let win;
+let win,
+    pathBuild = `${__dirname}/build/`;
 
-electronReload(__dirname + '/app/build/');
+electronReload(pathBuild);
 
 app.on('ready', () => {
 
@@ -16,7 +17,7 @@ app.on('ready', () => {
     fullscreen: true
   });
 
-  win.loadURL(`file://${__dirname}/app/build/index.html`);
+  win.loadURL(`file://${pathBuild}index.html`);
 
 });
 

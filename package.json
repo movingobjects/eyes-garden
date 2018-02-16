@@ -16,7 +16,7 @@
     "node": ">=8",
     "npm": ">=5"
   },
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
     "build": "node ./scripts/build.js",
     "build:web": "node ./scripts/build.js -b",
