@@ -28,6 +28,15 @@
     "dev": "node ./scripts/build.js -w",
     "dev:web": "node ./scripts/build.js -wb"
   },
+  "config": {
+    "package": {
+      "arch": "x64",
+      "pathOutput": "app/packages",
+      "pathWine": "/Applications/Wine Stable.app",
+      "zip": false
+    },
+    "pathBuild": "app/build"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
