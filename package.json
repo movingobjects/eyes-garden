@@ -1,6 +1,7 @@
 {
   "name": "eyes-garden",
-  "version": "0.1.0",
+  "productName": "Eyes Garden",
+  "version": "0.1.1",
   "description": "Projection for Four Eyes",
   "author": "Scott Thiessen (http://varyd.io)",
   "license": "ISC",
@@ -30,6 +31,10 @@
   },
   "config": {
     "package": {
+      "appIcon": {
+        "icns": "app/resources/app-icon.icns",
+        "ico": "app/resources/app-icon.ico"
+      },
       "arch": "x64",
       "pathOutput": "app/packages",
       "pathWine": "/Applications/Wine Stable.app",
