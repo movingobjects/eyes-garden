@@ -9,76 +9,62 @@ import { Range } from 'varyd-utils';
 
 import App from './App';
 
-import imgSclera from './images/eye-sclera.png';
-import imgIris from './images/eye-iris.png';
-import imgPupil from './images/eye-pupil.png';
-
-import imgOpen1 from './images/eye-open/eye-open-1.png';
-import imgOpen2 from './images/eye-open/eye-open-2.png';
-import imgOpen3 from './images/eye-open/eye-open-3.png';
-import imgOpen4 from './images/eye-open/eye-open-4.png';
-import imgOpen5 from './images/eye-open/eye-open-5.png';
-import imgOpen6 from './images/eye-open/eye-open-6.png';
-import imgOpen7 from './images/eye-open/eye-open-7.png';
-import imgOpen8 from './images/eye-open/eye-open-8.png';
-import imgOpen9 from './images/eye-open/eye-open-9.png';
-import imgOpen10 from './images/eye-open/eye-open-10.png';
-import imgOpen11 from './images/eye-open/eye-open-11.png';
-import imgOpen12 from './images/eye-open/eye-open-12.png';
-import imgOpen13 from './images/eye-open/eye-open-13.png';
-import imgOpen14 from './images/eye-open/eye-open-14.png';
-import imgOpen15 from './images/eye-open/eye-open-15.png';
-import imgOpen16 from './images/eye-open/eye-open-16.png';
-
-import imgShut1 from './images/eye-shut/eye-shut-1.png';
-import imgShut2 from './images/eye-shut/eye-shut-2.png';
-import imgShut3 from './images/eye-shut/eye-shut-3.png';
-import imgShut4 from './images/eye-shut/eye-shut-4.png';
-import imgShut5 from './images/eye-shut/eye-shut-5.png';
-import imgShut6 from './images/eye-shut/eye-shut-6.png';
-import imgShut7 from './images/eye-shut/eye-shut-7.png';
-import imgShut8 from './images/eye-shut/eye-shut-8.png';
-import imgShut9 from './images/eye-shut/eye-shut-9.png';
-import imgShut10 from './images/eye-shut/eye-shut-10.png';
-import imgShut11 from './images/eye-shut/eye-shut-11.png';
-import imgShut12 from './images/eye-shut/eye-shut-12.png';
-import imgShut13 from './images/eye-shut/eye-shut-13.png';
-import imgShut14 from './images/eye-shut/eye-shut-14.png';
-import imgShut15 from './images/eye-shut/eye-shut-15.png';
-import imgShut16 from './images/eye-shut/eye-shut-16.png';
-import imgShut17 from './images/eye-shut/eye-shut-17.png';
-import imgShut18 from './images/eye-shut/eye-shut-18.png';
-import imgShut19 from './images/eye-shut/eye-shut-19.png';
-
-import imgBlink1 from './images/eye-blink/eye-blink-1.png';
-import imgBlink2 from './images/eye-blink/eye-blink-2.png';
-import imgBlink3 from './images/eye-blink/eye-blink-3.png';
-import imgBlink4 from './images/eye-blink/eye-blink-4.png';
-import imgBlink5 from './images/eye-blink/eye-blink-5.png';
-import imgBlink6 from './images/eye-blink/eye-blink-6.png';
-import imgBlink7 from './images/eye-blink/eye-blink-7.png';
-import imgBlink8 from './images/eye-blink/eye-blink-8.png';
-
-
 // Constants
 
+const imgSclera = 'resources/images/eye-sclera.png',
+      imgIris   = 'resources/images/eye-iris.png',
+      imgPupil  = 'resources/images/eye-pupil.png';
+
 const imgSeqEyeOpen = [
-  imgOpen1, imgOpen2, imgOpen3, imgOpen4, imgOpen5,
-  imgOpen6, imgOpen7, imgOpen8, imgOpen9, imgOpen10,
-  imgOpen11, imgOpen12, imgOpen13, imgOpen14, imgOpen15,
-  imgOpen16
+  'resources/images/eye-open/eye-open-1.png',
+  'resources/images/eye-open/eye-open-2.png',
+  'resources/images/eye-open/eye-open-3.png',
+  'resources/images/eye-open/eye-open-4.png',
+  'resources/images/eye-open/eye-open-5.png',
+  'resources/images/eye-open/eye-open-6.png',
+  'resources/images/eye-open/eye-open-7.png',
+  'resources/images/eye-open/eye-open-8.png',
+  'resources/images/eye-open/eye-open-9.png',
+  'resources/images/eye-open/eye-open-10.png',
+  'resources/images/eye-open/eye-open-11.png',
+  'resources/images/eye-open/eye-open-12.png',
+  'resources/images/eye-open/eye-open-13.png',
+  'resources/images/eye-open/eye-open-14.png',
+  'resources/images/eye-open/eye-open-15.png',
+  'resources/images/eye-open/eye-open-16.png'
 ];
 
 const imgSeqEyeShut = [
-  imgShut1, imgShut2, imgShut3, imgShut4, imgShut5,
-  imgShut6, imgShut7, imgShut8, imgShut9, imgShut10,
-  imgShut11, imgShut12, imgShut13, imgShut14, imgShut15,
-  imgShut16, imgShut17, imgShut18, imgShut19
+  'resources/images/eye-shut/eye-shut-1.png',
+  'resources/images/eye-shut/eye-shut-2.png',
+  'resources/images/eye-shut/eye-shut-3.png',
+  'resources/images/eye-shut/eye-shut-4.png',
+  'resources/images/eye-shut/eye-shut-5.png',
+  'resources/images/eye-shut/eye-shut-6.png',
+  'resources/images/eye-shut/eye-shut-7.png',
+  'resources/images/eye-shut/eye-shut-8.png',
+  'resources/images/eye-shut/eye-shut-9.png',
+  'resources/images/eye-shut/eye-shut-10.png',
+  'resources/images/eye-shut/eye-shut-11.png',
+  'resources/images/eye-shut/eye-shut-12.png',
+  'resources/images/eye-shut/eye-shut-13.png',
+  'resources/images/eye-shut/eye-shut-14.png',
+  'resources/images/eye-shut/eye-shut-15.png',
+  'resources/images/eye-shut/eye-shut-16.png',
+  'resources/images/eye-shut/eye-shut-17.png',
+  'resources/images/eye-shut/eye-shut-18.png',
+  'resources/images/eye-shut/eye-shut-19.png'
 ];
 
 const imgSeqBlink = [
-  imgBlink1, imgBlink2, imgBlink3, imgBlink4, imgBlink5,
-  imgBlink6, imgBlink7, imgBlink8
+  'resources/images/eye-blink/eye-blink-1.png',
+  'resources/images/eye-blink/eye-blink-2.png',
+  'resources/images/eye-blink/eye-blink-3.png',
+  'resources/images/eye-blink/eye-blink-4.png',
+  'resources/images/eye-blink/eye-blink-5.png',
+  'resources/images/eye-blink/eye-blink-6.png',
+  'resources/images/eye-blink/eye-blink-7.png',
+  'resources/images/eye-blink/eye-blink-8.png'
 ];
 
 const DEBUG_DISABLE_SHUT = false,
