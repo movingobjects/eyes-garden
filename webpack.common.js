@@ -1,5 +1,6 @@
 
 const path              = require('path'),
+      CopyWebpackPlugin = require('copy-webpack-plugin'),
       HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, '../app/build'),
+    path: path.resolve(__dirname, './app/build'),
     filename: 'resources/scripts/[name].bundle.js'
   },
 
@@ -35,40 +36,7 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ['env'],
-          plugins: ['transform-object-rest-spread'],
-        }
-      },
-
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loader: 'file-loader',
-        options: {
-          name: 'resources/images/[name].[ext]'
-        }
-      },
-
-      {
-        test: /\.(mp3|aiff?|wav)$/i,
-        loader: 'file-loader',
-        options: {
-          name: 'resources/audio/[name].[ext]'
-        }
-      },
-
-      {
-        test: /\.(mp4|m4a|avi|mov)$/i,
-        loader: 'file-loader',
-        options: {
-          name: 'resources/video/[name].[ext]'
-        }
-      },
-
-      {
-        test: /\.(ttf|otf|eot|woff|woff2)$/,
-        loader: 'file-loader',
-        options: {
-          name: 'resources/fonts/[name].[ext]'
+          presets: ['env']
         }
       },
 
@@ -85,6 +53,12 @@ module.exports = {
   },
 
   plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: 'app/src/static',
+        to: 'resources'
+      }
+    ]),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'app/src/index.html'
