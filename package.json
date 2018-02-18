@@ -4,13 +4,13 @@
   "description": "Projection for Four Eyes",
   "author": "Scott Thiessen (http://varyd.io)",
   "license": "ISC",
-  "homepage": "https://github.com/sccottt/eyes-garden#readme",
+  "homepage": "https://github.com/movingobjects/eyes-garden#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sccottt/eyes-garden.git"
+    "url": "git+https://github.com/movingobjects/eyes-garden.git"
   },
   "bugs": {
-    "url": "https://github.com/sccottt/eyes-garden/issues"
+    "url": "https://github.com/movingobjects/eyes-garden/issues"
   },
   "engines": {
     "node": ">=8",
