@@ -46,9 +46,7 @@ export default class App {
 
     this.stage    = pixiApp.stage;
 
-    const elemApp = document.getElementById('app');
-          elemApp.appendChild(pixiApp.view);
-
+    document.body.appendChild(pixiApp.view)
 
     window.onresize = () => {
 

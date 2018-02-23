@@ -1,7 +1,9 @@
 
-const path              = require('path'),
-      CopyWebpackPlugin = require('copy-webpack-plugin'),
-      HtmlWebpackPlugin = require('html-webpack-plugin');
+const path                  = require('path'),
+      FaviconsWebpackPlugin = require('favicons-webpack-plugin'),
+      HtmlWebpackPlugin     = require('html-webpack-plugin');
+
+const appTitle = process.env.npm_package_productName || process.env.npm_package_name;
 
 module.exports = {
 
@@ -15,7 +17,11 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: [
+      '.js',
+      '.jsx',
+      '.json'
+    ],
     modules: [
       path.resolve(__dirname),
       'node_modules'
@@ -27,41 +33,76 @@ module.exports = {
 
       {
         test: /\.jsx?$/,
-        enforce: 'pre',
-        loader: 'source-map-loader'
-      },
-
-      {
-        test: /\.jsx?$/,
         loader: 'babel-loader',
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, 'app')
+        ],
         options: {
-          presets: ['env']
+          presets: ['env'],
+          plugins: [
+            'transform-object-rest-spread',
+            'transform-class-properties'
+          ],
         }
       },
 
       {
-        test: /\.scss$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
-          { loader: 'sass-loader' }
-        ]
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loader: 'file-loader',
+        options: {
+          name: 'resources/images/[name].[ext]'
+        }
+      },
+
+      {
+        test: /\.(ttf|otf|eot|woff|woff2)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'resources/fonts/[name].[ext]'
+        }
+      },
+
+      {
+        test: /\.(mp3|aif|aiff|wav)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'resources/audio/[name].[ext]'
+        }
+      },
+
+      {
+        test: /\.(mp4|webm)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'resources/video/[name].[ext]'
       }
+      },
 
     ]
   },
 
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: 'app/src/static',
-        to: 'resources'
+    new FaviconsWebpackPlugin({
+      logo: './app/resources/favicon.png',
+      inject: true,
+      prefix: 'resources/icons/favicons/',
+      title: appTitle,
+      icons: {
+        android: false,
+        appleIcon: false,
+        appleStartup: false,
+        coast: false,
+        favicons: true,
+        firefox: false,
+        opengraph: false,
+        twitter: false,
+        windows: true,
+        yandex: false
       }
-    ]),
+    }),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'app/src/index.html'
+      title: appTitle,
+      filename: 'index.html'
     })
   ]
 
